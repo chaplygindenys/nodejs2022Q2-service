@@ -1,4 +1,14 @@
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 
-@Controller('albums')
+@Controller('album')
 export class AlbumsController {}

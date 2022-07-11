@@ -1,4 +1,4 @@
 import { Controller } from '@nestjs/common';
 
-@Controller('favorites')
+@Controller('favs')
 export class FavoritesController {}
