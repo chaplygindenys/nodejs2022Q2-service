@@ -14,7 +14,9 @@ import { HttpModule } from '@nestjs/axios';
 import { UserService } from './user/user/user.service';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    /* the Module containing Array */
+  ],
   controllers: [
     AppController,
     TracksController,

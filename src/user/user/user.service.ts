@@ -3,45 +3,104 @@ import { v4 as uuidV4 } from 'uuid';
 
 @Injectable()
 export class UserService {
-  constructor(private userDB: User[]) {}
+  private userDB: User[] = [];
 
-  async findOne(_id: string) {
-    const user: User = await this.userDB.find((user: User) =>
-      user.id === _id ? user : null,
+  findAll() {
+    let AllUsersRespons = [];
+    if (this.userDB[0] === undefined) {
+      this.userDB.forEach((user: User) => {
+        const { id, login, version, createdAt, updatedAt } = user;
+        const userResponse: UserResponse = {
+          id,
+          login,
+          version,
+          createdAt,
+          updatedAt,
+        };
+        AllUsersRespons = [...AllUsersRespons, userResponse];
+      });
+      return AllUsersRespons;
+    } else {
+      return null;
+    }
+  }
+
+  findOne(_id: string) {
+    const user: User = this.userDB.find((user: User) =>
+      user.id === _id ? user : undefined,
     );
-    const { id, login, version, createdAt, updatedAt } = user;
-    return { id, login, version, createdAt, updatedAt };
+    if (user) {
+      const { id, login, version, createdAt, updatedAt } = user;
+      return { id, login, version, createdAt, updatedAt };
+    } else {
+      return null;
+    }
   }
 
-  async deleteOne(_id: string) {
-    const resalt = await this.userDB.filter((p) => p.id !== _id);
-    this.userDB = resalt;
-    return null;
+  deleteOne(_id: string) {
+    const resalt = this.userDB.filter((p) => p.id !== _id);
+    if (resalt) {
+      this.userDB = resalt;
+      return true;
+    } else {
+      return null;
+    }
   }
 
-  async addOne({ login, password }: User) {
-    const user = {
-      id: uuidV4(),
-      login,
-      password,
-      version: 0,
-      createdAt: Date.now(),
-      updatedAt: 0,
-    };
-    this.userDB.push(user);
-    return user;
+  addOne(createUserDto: CreateUserDto) {
+    if (
+      typeof createUserDto.login === 'string' &&
+      typeof createUserDto.password === 'string'
+    ) {
+      console.log(createUserDto);
+      const user = {
+        id: uuidV4(),
+        login: createUserDto.login,
+        password: createUserDto.password,
+        version: 1,
+        createdAt: Date.now(),
+        updatedAt: 1,
+      };
+      // console.log(user);
+      this.userDB.push(user);
+      return user;
+    } else {
+      return null;
+    }
   }
-  async upPas({ id, password }: User) {
-    const index = await this.userDB.findIndex((p) => p.id === id);
 
-    const upUserWithoutpass = {
-      id,
-      login: this.userDB[index].login,
-      version: +this.userDB[index].version + 1,
-      createdAt: this.userDB[index].createdAt,
-      updatedAt: Date.now(),
-    };
-    this.userDB[index] = { ...upUserWithoutpass, password };
-    return upUserWithoutpass;
+  upPas(id: string, updatePasswordDto: UpdatePasswordDto) {
+    if (
+      typeof updatePasswordDto.newPassword === 'string' &&
+      typeof updatePasswordDto.oldPassowrd === 'string'
+    ) {
+      // console.log(updatePasswordDto);
+      const index = this.userDB.findIndex((p) => p.id === id);
+      // console.log(index);
+      if (index >= 0) {
+        // console.log(updatePasswordDto);
+        // console.log(this.userDB[index]);
+        if (updatePasswordDto.oldPassowrd === this.userDB[index].password) {
+          const upUserWithoutpass = {
+            id,
+            login: this.userDB[index].login,
+            version: +this.userDB[index].version + 1,
+            createdAt: this.userDB[index].createdAt,
+            updatedAt: 1 + +Date.now(),
+          };
+          this.userDB[index] = {
+            ...upUserWithoutpass,
+            password: updatePasswordDto.newPassword,
+          };
+          return upUserWithoutpass;
+        } else {
+          return 403;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      return 400;
+    }
   }
 }
