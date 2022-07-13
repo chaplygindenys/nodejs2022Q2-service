@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidV4 } from 'uuid';
+import { CreateUserDto } from '../dto/user-create.dto';
+import { UpdatePasswordDto } from '../dto/user-update.dto';
 
 @Injectable()
 export class UserService {
@@ -7,7 +9,7 @@ export class UserService {
 
   findAll() {
     let AllUsersRespons = [];
-    if (this.userDB[0] === undefined) {
+    if (this.userDB[0] !== undefined) {
       this.userDB.forEach((user: User) => {
         const { id, login, version, createdAt, updatedAt } = user;
         const userResponse: UserResponse = {
@@ -37,70 +39,59 @@ export class UserService {
     }
   }
 
-  deleteOne(_id: string) {
-    const resalt = this.userDB.filter((p) => p.id !== _id);
-    if (resalt) {
-      this.userDB = resalt;
-      return true;
-    } else {
-      return null;
-    }
-  }
-
   addOne(createUserDto: CreateUserDto) {
-    if (
-      typeof createUserDto.login === 'string' &&
-      typeof createUserDto.password === 'string'
-    ) {
-      console.log(createUserDto);
-      const user = {
-        id: uuidV4(),
-        login: createUserDto.login,
-        password: createUserDto.password,
-        version: 1,
-        createdAt: Date.now(),
-        updatedAt: 1,
-      };
-      // console.log(user);
-      this.userDB.push(user);
-      return user;
-    } else {
-      return null;
-    }
+    const user = {
+      id: uuidV4(),
+      login: createUserDto.login,
+      password: createUserDto.password,
+      version: 1,
+      createdAt: +Date.now(),
+      updatedAt: +Date.now(),
+    };
+    this.userDB.push(user);
+    const { id, login, version, createdAt, updatedAt } = user;
+    return { id, login, version, createdAt, updatedAt };
   }
 
   upPas(id: string, updatePasswordDto: UpdatePasswordDto) {
-    if (
-      typeof updatePasswordDto.newPassword === 'string' &&
-      typeof updatePasswordDto.oldPassowrd === 'string'
-    ) {
-      // console.log(updatePasswordDto);
-      const index = this.userDB.findIndex((p) => p.id === id);
-      // console.log(index);
-      if (index >= 0) {
-        // console.log(updatePasswordDto);
-        // console.log(this.userDB[index]);
-        if (updatePasswordDto.oldPassowrd === this.userDB[index].password) {
-          const upUserWithoutpass = {
-            id,
-            login: this.userDB[index].login,
-            version: +this.userDB[index].version + 1,
-            createdAt: this.userDB[index].createdAt,
-            updatedAt: 1 + +Date.now(),
-          };
-          this.userDB[index] = {
-            ...upUserWithoutpass,
-            password: updatePasswordDto.newPassword,
-          };
-          return upUserWithoutpass;
-        } else {
-          return 403;
-        }
+    const index = this.userDB.findIndex((p) => p.id === id);
+    if (index >= 0) {
+      if (updatePasswordDto.oldPassword === this.userDB[index].password) {
+        const upUserWithoutpass = {
+          id,
+          login: this.userDB[index].login,
+          version: +this.userDB[index].version + 1,
+          createdAt: this.userDB[index].createdAt,
+          updatedAt: +Date.now(),
+        };
+        this.userDB[index] = {
+          ...upUserWithoutpass,
+          password: updatePasswordDto.newPassword,
+        };
+        return upUserWithoutpass;
       } else {
-        return null;
+        return 403;
       }
     } else {
-      return 400;
+      return null;
+    }
+  }
+
+  deleteOne(_id: string) {
+    console.log(_id);
+    const resalt = this.userDB.find((user: User) => {
+      if (user.id === _id) {
+        return true;
+      }
+    });
+    if (resalt) {
+      console.log(resalt);
+      const users = this.userDB.filter((p) => p.id !== _id);
+      this.userDB = users;
+      return true;
+    } else {
+      console.log('null', resalt);
+      return null;
     }
   }
 }
