@@ -10,7 +10,6 @@ import { FavoritesService } from './favorites/favorites/favorites.service';
 import { TracksController } from './tracks/tracks/tracks.controller';
 import { TracksService } from './tracks/tracks/tracks.service';
 import { UserController } from './user/user/user.controller';
-import { HttpModule } from '@nestjs/axios';
 import { UserService } from './user/user/user.service';
 
 @Module({
