@@ -46,7 +46,7 @@ interface UpdatePasswordDto {
   newPassword: string; // new password
 }
 interface FavoritesRepsonse {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
+  artists: Artist[] | [];
+  albums: Album[] | [];
+  tracks: Track[] | [];
 }

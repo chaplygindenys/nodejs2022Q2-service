@@ -1,10 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { FavsService } from 'src/favorites/favs/favs.service';
 import { v4 as uuidV4 } from 'uuid';
 import { CreateTrackDto } from '../dto/track-create.dto';
 import { UpdateTrackDto } from '../dto/track-update.dto';
 
 @Injectable()
 export class TracksService {
+  constructor(
+    @Inject(forwardRef(() => FavsService))
+    private favsService: FavsService,
+  ) {}
   private trackDB: Track[] = [];
 
   findAll() {
@@ -13,6 +18,17 @@ export class TracksService {
     } else {
       return null;
     }
+  }
+
+  findAllById(ids: string[]) {
+    const tracksById: Track[] = ids.reduce((acc, id: string) => {
+      const resalt: Track | null = this.findOne(id);
+      if (resalt) {
+        return [...acc, resalt];
+      }
+    }, []);
+
+    return tracksById;
   }
 
   findOne(_id: string) {
@@ -56,6 +72,7 @@ export class TracksService {
     console.log(_id);
     const resalt = this.trackDB.find((track: Track) => {
       if (track.id === _id) {
+        this.favsService.deleteOneTrack(_id);
         return true;
       }
     });

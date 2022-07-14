@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsNumber } from 'class-validator';
 
 export class UpdateTrackDto {
   @IsString()
