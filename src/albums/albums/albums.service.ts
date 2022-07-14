@@ -1,5 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { FavsService } from 'src/favorites/favs/favs.service';
+import { TracksService } from 'src/tracks/tracks/tracks.service';
 import { v4 as uuidV4 } from 'uuid';
 import { CreateAlbumDto } from '../dto/album-create.dto';
 import { UpdateAlbumDto } from '../dto/album-update.dto';
@@ -9,6 +10,8 @@ export class AlbumsService {
   constructor(
     @Inject(forwardRef(() => FavsService))
     private readonly favsService: FavsService,
+    @Inject(forwardRef(() => TracksService))
+    private readonly traksService: TracksService,
   ) {}
   private albumDB: Album[] = [];
 
@@ -65,12 +68,22 @@ export class AlbumsService {
       return null;
     }
   }
+  setArtistIdtoNull(artistId: string) {
+    const index = this.albumDB.findIndex((p) => p.artistId === artistId);
+    if (index >= 0) {
+      this.albumDB[index].artistId = null;
+      return true;
+    } else {
+      return null;
+    }
+  }
 
   deleteOne(_id: string) {
     console.log(_id);
     const resalt = this.albumDB.find((album: Album) => {
       if (album.id === _id) {
         this.favsService.deleteOneAlbum(_id);
+        this.traksService.setAlbumIdtoNull(_id);
         return true;
       }
     });

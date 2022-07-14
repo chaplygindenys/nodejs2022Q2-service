@@ -68,6 +68,26 @@ export class TracksService {
     }
   }
 
+  setArtistIdtoNull(artistId: string) {
+    const index = this.trackDB.findIndex((p) => p.artistId === artistId);
+    if (index >= 0) {
+      this.trackDB[index].artistId = null;
+      return true;
+    } else {
+      return null;
+    }
+  }
+
+  setAlbumIdtoNull(albumId: string) {
+    const index = this.trackDB.findIndex((p) => p.albumId === albumId);
+    if (index >= 0) {
+      this.trackDB[index].albumId = null;
+      return true;
+    } else {
+      return null;
+    }
+  }
+
   deleteOne(_id: string) {
     console.log(_id);
     const resalt = this.trackDB.find((track: Track) => {
