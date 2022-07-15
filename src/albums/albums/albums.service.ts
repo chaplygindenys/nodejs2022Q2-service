@@ -16,11 +16,7 @@ export class AlbumsService {
   private albumDB: Album[] = [];
 
   findAll() {
-    if (this.albumDB[0] !== undefined) {
-      return this.albumDB;
-    } else {
-      return null;
-    }
+    return this.albumDB;
   }
   findAllById(ids: string[]) {
     const albumsById: Album[] = ids.reduce((acc, id: string) => {
@@ -79,7 +75,6 @@ export class AlbumsService {
   }
 
   deleteOne(_id: string) {
-    console.log(_id);
     const resalt = this.albumDB.find((album: Album) => {
       if (album.id === _id) {
         this.favsService.deleteOneAlbum(_id);
@@ -88,12 +83,10 @@ export class AlbumsService {
       }
     });
     if (resalt) {
-      console.log(resalt);
       const albums = this.albumDB.filter((p) => p.id !== _id);
       this.albumDB = albums;
       return true;
     } else {
-      console.log('null', resalt);
       return null;
     }
   }

@@ -22,11 +22,7 @@ export class AlbumsController {
 
   @Get()
   findAll() {
-    const albums = this.albumService.findAll();
-    if (albums === null) {
-      throw new HttpException('album not found', HttpStatus.NOT_FOUND);
-    }
-    return albums;
+    return this.albumService.findAll();
   }
 
   @Get(':id')
@@ -60,8 +56,6 @@ export class AlbumsController {
   @Delete(':id')
   @HttpCode(204)
   remove(@Param() params: FindOneIdParams) {
-    console.log(params.id);
-    console.log(typeof params.id);
     const album = this.albumService.deleteOne(params.id);
     if (album === null) {
       throw new HttpException('album not found', HttpStatus.NOT_FOUND);

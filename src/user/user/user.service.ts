@@ -8,22 +8,20 @@ export class UserService {
   private userDB: User[] = [];
 
   findAll() {
-    let AllUsersRespons = [];
     if (this.userDB[0] !== undefined) {
-      this.userDB.forEach((user: User) => {
-        const { id, login, version, createdAt, updatedAt } = user;
+      const allUsersRespons = this.userDB.reduce((acc, user: User) => {
         const userResponse: UserResponse = {
-          id,
-          login,
-          version,
-          createdAt,
-          updatedAt,
+          id: user.id,
+          login: user.login,
+          version: user.version,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         };
-        AllUsersRespons = [...AllUsersRespons, userResponse];
-      });
-      return AllUsersRespons;
+        return [...acc, userResponse];
+      }, []);
+      return allUsersRespons;
     } else {
-      return null;
+      return [];
     }
   }
 
@@ -78,19 +76,16 @@ export class UserService {
   }
 
   deleteOne(_id: string) {
-    console.log(_id);
     const resalt = this.userDB.find((user: User) => {
       if (user.id === _id) {
         return true;
       }
     });
     if (resalt) {
-      console.log(resalt);
       const users = this.userDB.filter((p) => p.id !== _id);
       this.userDB = users;
       return true;
     } else {
-      console.log('null', resalt);
       return null;
     }
   }

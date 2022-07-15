@@ -18,9 +18,7 @@ export class FavsController {
 
   @Get()
   findAll() {
-    console.log('GET');
     const favss = this.favsService.findAll();
-    console.log(favss);
     if (favss === null) {
       throw new HttpException('favs not found', HttpStatus.NOT_FOUND);
     }

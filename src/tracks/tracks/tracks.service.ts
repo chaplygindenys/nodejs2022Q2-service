@@ -13,11 +13,7 @@ export class TracksService {
   private trackDB: Track[] = [];
 
   findAll() {
-    if (this.trackDB[0] !== undefined) {
-      return this.trackDB;
-    } else {
-      return null;
-    }
+    return this.trackDB;
   }
 
   findAllById(ids: string[]) {
@@ -89,7 +85,6 @@ export class TracksService {
   }
 
   deleteOne(_id: string) {
-    console.log(_id);
     const resalt = this.trackDB.find((track: Track) => {
       if (track.id === _id) {
         this.favsService.deleteOneTrack(_id);
@@ -97,12 +92,10 @@ export class TracksService {
       }
     });
     if (resalt) {
-      console.log(resalt);
       const tracks = this.trackDB.filter((p) => p.id !== _id);
       this.trackDB = tracks;
       return true;
     } else {
-      console.log('null', resalt);
       return null;
     }
   }

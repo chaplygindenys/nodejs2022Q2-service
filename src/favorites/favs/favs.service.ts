@@ -37,7 +37,6 @@ export class FavsService {
     if (this.favsDB.tracks[0] !== undefined) {
       favs.tracks = this.tracksService.findAllById(this.favsDB.tracks);
     }
-    console.log(favs);
     return favs;
   }
 
@@ -78,12 +77,10 @@ export class FavsService {
       }
     });
     if (resalt) {
-      console.log(resalt);
       const albums = this.favsDB.albums.filter((id) => id !== _id);
       this.favsDB.albums = albums;
       return true;
     } else {
-      console.log('null', resalt);
       return null;
     }
   }
@@ -95,12 +92,10 @@ export class FavsService {
       }
     });
     if (resalt) {
-      console.log(resalt);
       const artists = this.favsDB.artists.filter((id) => id !== _id);
       this.favsDB.artists = artists;
       return true;
     } else {
-      console.log('null', resalt);
       return null;
     }
   }
@@ -112,12 +107,10 @@ export class FavsService {
       }
     });
     if (resalt) {
-      console.log(resalt);
       const tracks = this.favsDB.tracks.filter((id) => id !== _id);
       this.favsDB.tracks = tracks;
       return true;
     } else {
-      console.log('null', resalt);
       return null;
     }
   }

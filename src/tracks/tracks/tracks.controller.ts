@@ -22,11 +22,7 @@ export class TracksController {
 
   @Get()
   findAll() {
-    const tracks = this.trackService.findAll();
-    if (tracks === null) {
-      throw new HttpException('track not found', HttpStatus.NOT_FOUND);
-    }
-    return tracks;
+    return this.trackService.findAll();
   }
 
   @Get(':id')
@@ -60,8 +56,6 @@ export class TracksController {
   @Delete(':id')
   @HttpCode(204)
   remove(@Param() params: FindOneIdParams) {
-    console.log(params.id);
-    console.log(typeof params.id);
     const track = this.trackService.deleteOne(params.id);
     if (track === null) {
       throw new HttpException('track not found', HttpStatus.NOT_FOUND);

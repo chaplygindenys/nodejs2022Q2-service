@@ -19,11 +19,7 @@ export class ArtistsService {
   private artistDB: Artist[] = [];
 
   findAll() {
-    if (this.artistDB[0] !== undefined) {
-      return this.artistDB;
-    } else {
-      return null;
-    }
+    return this.artistDB;
   }
 
   findAllById(ids: string[]) {
@@ -62,8 +58,13 @@ export class ArtistsService {
     if (index >= 0) {
       const upArtist = {
         id,
-        name: updateartistDto.name || this.artistDB[index].name,
-        grammy: updateartistDto.grammy || this.artistDB[index].grammy,
+        name: updateartistDto.name
+          ? updateartistDto.name
+          : this.artistDB[index].name,
+        grammy:
+          typeof updateartistDto.grammy === 'boolean'
+            ? updateartistDto.grammy
+            : this.artistDB[index].grammy,
       };
       this.artistDB[index] = upArtist;
       return upArtist;
@@ -73,7 +74,6 @@ export class ArtistsService {
   }
 
   deleteOne(_id: string) {
-    console.log(_id);
     const resalt = this.artistDB.find((artist: Artist) => {
       if (artist.id === _id) {
         this.favsService.deleteOneArtist(_id);
@@ -83,12 +83,10 @@ export class ArtistsService {
       }
     });
     if (resalt) {
-      console.log(resalt);
       const artists = this.artistDB.filter((p) => p.id !== _id);
       this.artistDB = artists;
       return true;
     } else {
-      console.log('null', resalt);
       return null;
     }
   }

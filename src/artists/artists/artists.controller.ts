@@ -21,11 +21,7 @@ export class ArtistsController {
 
   @Get()
   findAll() {
-    const artists = this.artistService.findAll();
-    if (artists === null) {
-      throw new HttpException('artist not found', HttpStatus.NOT_FOUND);
-    }
-    return artists;
+    return this.artistService.findAll();
   }
 
   @Get(':id')
@@ -59,8 +55,6 @@ export class ArtistsController {
   @Delete(':id')
   @HttpCode(204)
   remove(@Param() params: FindOneIdParams) {
-    console.log(params.id);
-    console.log(typeof params.id);
     const artist = this.artistService.deleteOne(params.id);
     if (artist === null) {
       throw new HttpException('artist not found', HttpStatus.NOT_FOUND);

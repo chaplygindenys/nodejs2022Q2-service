@@ -23,9 +23,6 @@ export class UserController {
   @Get()
   findAll() {
     const users = this.userService.findAll();
-    if (users === null) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
     return users;
   }
 
@@ -63,8 +60,6 @@ export class UserController {
   @Delete(':id')
   @HttpCode(204)
   remove(@Param() params: FindOneIdParams) {
-    console.log(params.id);
-    console.log(typeof params.id);
     const user = this.userService.deleteOne(params.id);
     if (user === null) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
