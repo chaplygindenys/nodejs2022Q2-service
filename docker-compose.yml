@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres
+    container_name: rest-db-postgres
+    restart: always
+    enviroment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: rest
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports: -'5432:5432'
+    networks:
+      - rest-network
+
+  rest-api:
+    image: rest-api
+    build: .
+    depends_on:
+      - db
+    ports:
+      - '4000:4000'
+    environment:
+      DB_NAME: rest
+      DB_USER: postgres
+      DB_HOST: rest-db-postgres:5432
+      DB_PASSWORD: postgres
+    networks:
+      - rest-network
+#Docker-Networks
+networks:
+  rest-network:
+    driver: bridge
+#Voolumes
+volumes:
+  dbdata:
+    driver: local
