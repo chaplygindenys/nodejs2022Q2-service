@@ -5,28 +5,37 @@ services:
     image: postgres
     container_name: rest-db-postgres
     restart: always
-    enviroment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: rest
+    env_file:
+      - .env
     volumes:
       - ./pgdata:/var/lib/postgresql/data
-    ports: -'5432:5432'
+    ports:
+      - '5432:5432'
     networks:
       - rest-network
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    networks:
+      - rest-network
+    ports:
+      - '5555:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
 
   rest-api:
     image: rest-api
+    container_name: rest-api
     build: .
     depends_on:
       - db
     ports:
       - '4000:4000'
-    environment:
-      DB_NAME: rest
-      DB_USER: postgres
-      DB_HOST: rest-db-postgres:5432
-      DB_PASSWORD: postgres
+    env_file:
+      - .env
     networks:
       - rest-network
 #Docker-Networks

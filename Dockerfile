@@ -3,6 +3,7 @@ FROM node:lts-alpine3.15
 WORKDIR /app
 
 COPY package*.json /app
+COPY prisma ./prisma/
 
 RUN npm install
 
