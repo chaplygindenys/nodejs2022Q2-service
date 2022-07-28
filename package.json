@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start:migrate:prod": "npm run push && npm run start:prod",
+    "start:migrate:dev": "npm run push && npm run start:dev",
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate dev --preview-feature",
     "push": "npx prisma db push",
