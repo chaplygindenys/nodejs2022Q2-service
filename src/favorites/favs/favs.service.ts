@@ -24,10 +24,10 @@ export class FavsService {
           },
         },
       });
-      console.log(favsDB);
+
       return favsDB;
     } catch (error) {
-      console.log(error);
+      return null;
     }
   }
 
@@ -63,7 +63,6 @@ export class FavsService {
       });
       return albums.albums.find((album) => album.id === id);
     } catch (error) {
-      console.log(error);
       return null;
     }
   }
@@ -87,10 +86,9 @@ export class FavsService {
         },
       });
       const artist = artists.artists.find((artist) => artist.id === id);
-      console.log(artist);
+
       return artist;
     } catch (error) {
-      console.log(error);
       return null;
     }
   }
@@ -121,10 +119,9 @@ export class FavsService {
           },
         });
       const track = tracks.tracks.find((track) => track.id === id);
-      console.log(track);
+
       return track;
     } catch (error) {
-      console.log(error);
       return null;
     }
   }
@@ -142,10 +139,9 @@ export class FavsService {
           },
         },
       });
-      console.log(resalt);
+
       return resalt;
     } catch (error) {
-      console.log(error);
       return null;
     }
   }
@@ -163,10 +159,9 @@ export class FavsService {
           },
         },
       });
-      console.log(resalt);
+
       return resalt;
     } catch (error) {
-      console.log(error);
       return null;
     }
   }
@@ -184,10 +179,9 @@ export class FavsService {
           },
         },
       });
-      console.log(resalt);
+
       return resalt;
     } catch (error) {
-      console.log(error);
       return null;
     }
   }

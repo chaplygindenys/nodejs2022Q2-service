@@ -32,7 +32,7 @@ export class ArtistsService {
       });
       return newArtist;
     } catch (error) {
-      console.log(error);
+      return null;
     }
   }
 

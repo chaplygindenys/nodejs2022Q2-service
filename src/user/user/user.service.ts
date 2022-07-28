@@ -66,7 +66,7 @@ export default class UserService {
       });
       return newUser;
     } catch (error) {
-      console.log(error);
+      return null;
     }
   }
 

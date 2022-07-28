@@ -32,7 +32,7 @@ export class AlbumsService {
       });
       return newAlbum;
     } catch (error) {
-      console.log(error);
+      return null;
     }
   }
 
