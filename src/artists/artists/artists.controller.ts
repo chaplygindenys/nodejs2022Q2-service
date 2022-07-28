@@ -20,13 +20,13 @@ export class ArtistsController {
   constructor(private readonly artistService: ArtistsService) {}
 
   @Get()
-  findAll() {
-    return this.artistService.findAll();
+  async findAll() {
+    return await this.artistService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param() params: FindOneIdParams) {
-    const artist = this.artistService.findOne(params.id);
+  async findOne(@Param() params: FindOneIdParams) {
+    const artist = await this.artistService.findOne(params.id);
     if (artist === null) {
       throw new HttpException('artist not found', HttpStatus.NOT_FOUND);
     }
@@ -35,17 +35,17 @@ export class ArtistsController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() createartistDto: CreateArtistDto) {
-    const artist = this.artistService.addOne(createartistDto);
+  async create(@Body() createartistDto: CreateArtistDto) {
+    const artist = await this.artistService.addOne(createartistDto);
     return artist;
   }
 
   @Put(':id')
-  update(
+  async update(
     @Body() updateartistDto: UpdateArtistDto,
     @Param() params: FindOneIdParams,
   ) {
-    const artist = this.artistService.upPas(params.id, updateartistDto);
+    const artist = await this.artistService.upPas(params.id, updateartistDto);
     if (artist === null) {
       throw new HttpException('artist not found', HttpStatus.NOT_FOUND);
     }
@@ -54,8 +54,8 @@ export class ArtistsController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param() params: FindOneIdParams) {
-    const artist = this.artistService.deleteOne(params.id);
+  async remove(@Param() params: FindOneIdParams) {
+    const artist = await this.artistService.deleteOne(params.id);
     if (artist === null) {
       throw new HttpException('artist not found', HttpStatus.NOT_FOUND);
     }

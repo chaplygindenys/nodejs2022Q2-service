@@ -21,13 +21,13 @@ export class TracksController {
   constructor(private readonly trackService: TracksService) {}
 
   @Get()
-  findAll() {
-    return this.trackService.findAll();
+  async findAll() {
+    return await this.trackService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param() params: FindOneIdParams) {
-    const track = this.trackService.findOne(params.id);
+  async findOne(@Param() params: FindOneIdParams) {
+    const track = await this.trackService.findOne(params.id);
     if (track === null) {
       throw new HttpException('track not found', HttpStatus.NOT_FOUND);
     }
@@ -36,17 +36,17 @@ export class TracksController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() createTrackDto: CreateTrackDto) {
-    const track = this.trackService.addOne(createTrackDto);
+  async create(@Body() createTrackDto: CreateTrackDto) {
+    const track = await this.trackService.addOne(createTrackDto);
     return track;
   }
 
   @Put(':id')
-  update(
+  async update(
     @Body() updateTrackDto: UpdateTrackDto,
     @Param() params: FindOneIdParams,
   ) {
-    const track = this.trackService.upPas(params.id, updateTrackDto);
+    const track = await this.trackService.upPas(params.id, updateTrackDto);
     if (track === null) {
       throw new HttpException('track not found', HttpStatus.NOT_FOUND);
     }
@@ -55,8 +55,8 @@ export class TracksController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param() params: FindOneIdParams) {
-    const track = this.trackService.deleteOne(params.id);
+  async remove(@Param() params: FindOneIdParams) {
+    const track = await this.trackService.deleteOne(params.id);
     if (track === null) {
       throw new HttpException('track not found', HttpStatus.NOT_FOUND);
     }

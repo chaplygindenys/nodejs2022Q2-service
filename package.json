@@ -6,6 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "start:migrate:prod": "npm run push && npm run start:prod",
+    "generate": "npx prisma generate",
+    "migrate": "npx prisma migrate dev --preview-feature",
+    "push": "npx prisma db push",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -59,6 +63,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^27.2.5",
     "prettier": "^2.3.2",
+    "prettier-plugin-prisma": "^4.1.0",
     "source-map-support": "^0.5.20",
     "supertest": "^6.2.3",
     "ts-jest": "^27.0.3",

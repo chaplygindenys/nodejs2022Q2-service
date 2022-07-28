@@ -1,46 +1,53 @@
-version: '3.7'
+version: '3.9'
 
 services:
-  db:
+  postgres:
     image: postgres
     container_name: rest-db-postgres
     restart: always
     env_file:
-      - .env
+      - docker.env
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     ports:
       - '5432:5432'
     networks:
-      - rest-network
+      - postgres
+
   pgadmin:
     image: dpage/pgadmin4
     depends_on:
-      - db
-    networks:
-      - rest-network
+      - postgres
+    links:
+      - postgres:postgres
+    container_name: nestjs-pgadmin
     ports:
-      - '5555:80'
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-    restart: unless-stopped
+      - '5050:80'
+    volumes:
+      - ./pgadmin:/root/.pgadmin
+    env_file:
+      - docker.env
+    networks:
+      - postgres
 
   rest-api:
     image: rest-api
     container_name: rest-api
-    build: .
+    links:
+      - postgres:postgres
     depends_on:
-      - db
+      - postgres
+      - pgadmin
+    env_file:
+      - docker.env
+    build: .
     ports:
       - '4000:4000'
-    env_file:
-      - .env
     networks:
-      - rest-network
-#Docker-Networks
+      - postgres
+
 networks:
-  rest-network:
+  postgres:
     driver: bridge
 #Voolumes
 volumes:

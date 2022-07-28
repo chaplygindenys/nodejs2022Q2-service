@@ -1,4 +1,4 @@
-FROM node:lts-alpine3.15
+FROM node:lts-alpine3.15 AS builder
 
 WORKDIR /app
 
@@ -9,10 +9,19 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build
+
+
+FROM node:lts-alpine3.15
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/doc ./doc
+
 ENV PORT 4000
 
 EXPOSE $PORT
-
-VOLUME [ "/app/src" ]
-
-CMD [ "npm", "run", "start:dev" ]
+# 👇 new migrate and start app script
+CMD [  "npm", "run", "start:migrate:prod" ]

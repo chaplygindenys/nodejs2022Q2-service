@@ -5,12 +5,11 @@ import { AppService } from './app.service';
 import { ArtistsModule } from './artists/artist.module';
 import { FavsModule } from './favorites/favs.module';
 import { TracksModule } from './tracks/track.module';
-import { UserController } from './user/user/user.controller';
-import { UserService } from './user/user/user.service';
+import { UserModule } from './user/user/user.module';
 
 @Module({
-  imports: [FavsModule, AlbumsModule, ArtistsModule, TracksModule],
-  controllers: [AppController, UserController],
-  providers: [AppService, UserService],
+  imports: [FavsModule, AlbumsModule, ArtistsModule, TracksModule, UserModule],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

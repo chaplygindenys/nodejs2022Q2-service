@@ -1,11 +1,13 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AlbumsService } from 'src/albums/albums/albums.service';
 import { ArtistsService } from 'src/artists/artists/artists.service';
+import { PrismaService } from 'src/prisma/prisma/prisma.service';
 import { TracksService } from 'src/tracks/tracks/tracks.service';
 
 @Injectable()
 export class FavsService {
   constructor(
+    private prismaService: PrismaService,
     @Inject(forwardRef(() => TracksService))
     private readonly tracksService: TracksService,
     @Inject(forwardRef(() => AlbumsService))
@@ -13,104 +15,178 @@ export class FavsService {
     @Inject(forwardRef(() => ArtistsService))
     private readonly artistsService: ArtistsService,
   ) {}
-  private favsDB: Favorites = {
-    artists: [], // favorite artists ids
-    albums: [], // favorite albums ids
-    tracks: [], // favorite tracks ids
-  };
-
-  findAll() {
-    const favs: FavoritesRepsonse = {
-      artists: [],
-      albums: [],
-      tracks: [],
-    };
-
-    if (this.favsDB.albums[0] !== undefined) {
-      favs.albums = this.albumsService.findAllById(this.favsDB.albums);
+  async findAll() {
+    try {
+      const favsDB = await this.prismaService.favorites.findFirst({
+        select: {
+          albums: true,
+          artists: true,
+          tracks: true,
+        },
+      });
+      return favsDB;
+    } catch (error) {
+      console.log(error);
     }
-
-    if (this.favsDB.artists[0] !== undefined) {
-      favs.artists = this.artistsService.findAllById(this.favsDB.artists);
-    }
-
-    if (this.favsDB.tracks[0] !== undefined) {
-      favs.tracks = this.tracksService.findAllById(this.favsDB.tracks);
-    }
-    return favs;
   }
 
-  addOneAlbum(id: string) {
-    const resalt = this.albumsService.findOne(id);
-    if (resalt) {
-      this.favsDB.albums.push(id);
-      return true;
+  async findId() {
+    const favsDB = await this.prismaService.favorites.findMany();
+    if (!favsDB.length) {
+      const emptryFavs = await this.prismaService.favorites.create({
+        data: {},
+      });
+      return emptryFavs.id;
     } else {
+      return favsDB[0].id;
+    }
+  }
+
+  async addOneAlbum(id: string) {
+    try {
+      const favsId = await this.findId();
+      const albums = await this.prismaService.favorites.update({
+        where: {
+          id: favsId,
+        },
+        data: {
+          albums: {
+            connect: { id: id },
+          },
+        },
+        select: {
+          albums: {
+            select: { id: true, artistId: true, year: true, name: true },
+          },
+        },
+      });
+      return albums.albums.find((album) => album.id === id);
+    } catch (error) {
+      console.log(error);
       return null;
     }
   }
 
-  addOneArtist(id: string) {
-    const resalt = this.artistsService.findOne(id);
-    if (resalt) {
-      this.favsDB.artists.push(id);
-      return true;
-    } else {
+  async addOneArtist(id: string) {
+    const favsId = await this.findId();
+    try {
+      const artists = await this.prismaService.favorites.update({
+        where: {
+          id: favsId,
+        },
+        data: {
+          artists: {
+            connect: { id: id },
+          },
+        },
+        select: {
+          artists: {
+            select: { id: true, name: true, grammy: true },
+          },
+        },
+      });
+      const artist = artists.artists.find((artist) => artist.id === id);
+      console.log(artist);
+      return artist;
+    } catch (error) {
+      console.log(error);
       return null;
     }
   }
 
-  addOneTrack(id: string) {
-    const resalt = this.tracksService.findOne(id);
-    if (resalt) {
-      this.favsDB.tracks.push(id);
-      return true;
-    } else {
+  async addOneTrack(id: string) {
+    const favsId = await this.findId();
+    try {
+      const tracks: { tracks: Track[] } =
+        await this.prismaService.favorites.update({
+          where: {
+            id: favsId,
+          },
+          data: {
+            tracks: {
+              connect: { id: id },
+            },
+          },
+          select: {
+            tracks: {
+              select: {
+                id: true,
+                albumId: true,
+                artistId: true,
+                name: true,
+                duration: true,
+              },
+            },
+          },
+        });
+      const track = tracks.tracks.find((track) => track.id === id);
+      console.log(track);
+      return track;
+    } catch (error) {
+      console.log(error);
       return null;
     }
   }
 
-  deleteOneAlbum(_id: string) {
-    const resalt = this.favsDB.albums.find((id: string) => {
-      if (id === _id) {
-        return true;
-      }
-    });
-    if (resalt) {
-      const albums = this.favsDB.albums.filter((id) => id !== _id);
-      this.favsDB.albums = albums;
-      return true;
-    } else {
+  async deleteOneAlbum(id: string) {
+    const favsId = await this.findId();
+    try {
+      const resalt = await this.prismaService.favorites.update({
+        where: {
+          id: favsId,
+        },
+        data: {
+          albums: {
+            disconnect: { id: id },
+          },
+        },
+      });
+      console.log(resalt);
+      return resalt;
+    } catch (error) {
+      console.log(error);
       return null;
     }
   }
 
-  deleteOneArtist(_id: string) {
-    const resalt = this.favsDB.artists.find((id: string) => {
-      if (id === _id) {
-        return true;
-      }
-    });
-    if (resalt) {
-      const artists = this.favsDB.artists.filter((id) => id !== _id);
-      this.favsDB.artists = artists;
-      return true;
-    } else {
+  async deleteOneArtist(id: string) {
+    const favsId = await this.findId();
+    try {
+      const resalt = await this.prismaService.favorites.update({
+        where: {
+          id: favsId,
+        },
+        data: {
+          artists: {
+            disconnect: { id: id },
+          },
+        },
+      });
+      console.log(resalt);
+      return resalt;
+    } catch (error) {
+      console.log(error);
       return null;
     }
   }
 
-  deleteOneTrack(_id: string) {
-    const resalt = this.favsDB.tracks.find((id: string) => {
-      if (id === _id) {
-        return true;
-      }
-    });
-    if (resalt) {
-      const tracks = this.favsDB.tracks.filter((id) => id !== _id);
-      this.favsDB.tracks = tracks;
-      return true;
-    } else {
+  async deleteOneTrack(id: string) {
+    const favsId = await this.findId();
+    try {
+      const resalt = await this.prismaService.favorites.update({
+        where: {
+          id: favsId,
+        },
+        data: {
+          tracks: {
+            disconnect: { id: id },
+          },
+        },
+      });
+      console.log(resalt);
+      return resalt;
+    } catch (error) {
+      console.log(error);
       return null;
     }
   }

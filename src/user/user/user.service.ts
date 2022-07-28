@@ -2,71 +2,101 @@ import { Injectable } from '@nestjs/common';
 import { v4 as uuidV4 } from 'uuid';
 import { CreateUserDto } from '../dto/user-create.dto';
 import { UpdatePasswordDto } from '../dto/user-update.dto';
+import { PrismaService } from 'src/prisma/prisma/prisma.service';
+import { User } from '@prisma/client';
 
 @Injectable()
-export class UserService {
-  private userDB: User[] = [];
+export default class UserService {
+  constructor(private prismaService: PrismaService) {}
 
-  findAll() {
-    if (this.userDB[0] !== undefined) {
-      const allUsersRespons = this.userDB.reduce((acc, user: User) => {
-        const userResponse: UserResponse = {
-          id: user.id,
-          login: user.login,
-          version: user.version,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        };
-        return [...acc, userResponse];
-      }, []);
-      return allUsersRespons;
-    } else {
+  async findAll() {
+    try {
+      const allUsers: UserResponse[] = await this.prismaService.user.findMany({
+        select: {
+          id: true,
+          login: true,
+          version: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+      return allUsers;
+    } catch (error) {
       return [];
     }
   }
 
-  findOne(_id: string) {
-    const user: User = this.userDB.find((user: User) =>
-      user.id === _id ? user : undefined,
-    );
-    if (user) {
-      const { id, login, version, createdAt, updatedAt } = user;
-      return { id, login, version, createdAt, updatedAt };
-    } else {
+  async findOne(id: string) {
+    try {
+      const user: UserResponse = await this.prismaService.user.findUnique({
+        where: {
+          id,
+        },
+        select: {
+          id: true,
+          login: true,
+          version: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+      return user;
+    } catch (error) {
       return null;
     }
   }
 
-  addOne(createUserDto: CreateUserDto) {
+  async addOne(createUserDto: CreateUserDto) {
     const user = {
-      id: uuidV4(),
       login: createUserDto.login,
       password: createUserDto.password,
       version: 1,
       createdAt: +Date.now(),
       updatedAt: +Date.now(),
     };
-    this.userDB.push(user);
-    const { id, login, version, createdAt, updatedAt } = user;
-    return { id, login, version, createdAt, updatedAt };
+    try {
+      const newUser: UserResponse = await this.prismaService.user.create({
+        data: user,
+        select: {
+          id: true,
+          login: true,
+          version: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+      return newUser;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  upPas(id: string, updatePasswordDto: UpdatePasswordDto) {
-    const index = this.userDB.findIndex((p) => p.id === id);
-    if (index >= 0) {
-      if (updatePasswordDto.oldPassword === this.userDB[index].password) {
-        const upUserWithoutpass = {
+  async upPas(id: string, updatePasswordDto: UpdatePasswordDto) {
+    const existingUser: User = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+    if (existingUser) {
+      if (updatePasswordDto.oldPassword === existingUser.password) {
+        const user = {
           id,
-          login: this.userDB[index].login,
-          version: +this.userDB[index].version + 1,
-          createdAt: this.userDB[index].createdAt,
+          login: existingUser.login,
+          password: updatePasswordDto.newPassword,
+          version: existingUser.version + 1,
+          createdAt: +existingUser.createdAt,
           updatedAt: +Date.now(),
         };
-        this.userDB[index] = {
-          ...upUserWithoutpass,
-          password: updatePasswordDto.newPassword,
-        };
-        return upUserWithoutpass;
+        const upUser: UserResponse = await this.prismaService.user.update({
+          where: { id },
+          data: { ...user },
+          select: {
+            id: true,
+            login: true,
+            version: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        });
+        return upUser;
       } else {
         return 403;
       }
@@ -75,15 +105,14 @@ export class UserService {
     }
   }
 
-  deleteOne(_id: string) {
-    const resalt = this.userDB.find((user: User) => {
-      if (user.id === _id) {
-        return true;
-      }
+  async deleteOne(id: string) {
+    const existingUser: User = await this.prismaService.user.findUnique({
+      where: { id },
     });
-    if (resalt) {
-      const users = this.userDB.filter((p) => p.id !== _id);
-      this.userDB = users;
+    if (existingUser) {
+      await this.prismaService.user.delete({
+        where: { id },
+      });
       return true;
     } else {
       return null;

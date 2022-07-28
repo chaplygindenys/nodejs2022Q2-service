@@ -1,6 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Artist } from '@prisma/client';
 import { AlbumsService } from 'src/albums/albums/albums.service';
 import { FavsService } from 'src/favorites/favs/favs.service';
+import { PrismaService } from 'src/prisma/prisma/prisma.service';
 import { TracksService } from 'src/tracks/tracks/tracks.service';
 import { v4 as uuidV4 } from 'uuid';
 import { CreateArtistDto } from '../dto/artist-create.dto';
@@ -9,6 +11,7 @@ import { UpdateArtistDto } from '../dto/artist-update.dto';
 @Injectable()
 export class ArtistsService {
   constructor(
+    private prismaService: PrismaService,
     @Inject(forwardRef(() => FavsService))
     private readonly favsService: FavsService,
     @Inject(forwardRef(() => TracksService))
@@ -16,75 +19,54 @@ export class ArtistsService {
     @Inject(forwardRef(() => AlbumsService))
     private readonly albumsService: AlbumsService,
   ) {}
-  private artistDB: Artist[] = [];
 
-  findAll() {
-    return this.artistDB;
+  async findAll() {
+    return await this.prismaService.artist.findMany();
   }
 
-  findAllById(ids: string[]) {
-    const artistsById: Artist[] = ids.reduce((acc, id: string) => {
-      const resalt: Artist | null = this.findOne(id);
-      if (resalt) {
-        return [...acc, resalt];
-      }
-    }, []);
-
-    return artistsById;
-  }
-
-  findOne(_id: string) {
-    const artist: Artist = this.artistDB.find((artist: Artist) =>
-      artist.id === _id ? artist : undefined,
-    );
-    if (artist) {
+  async findOne(id: string) {
+    try {
+      const artist: Artist = await this.prismaService.artist.findUnique({
+        where: { id },
+      });
       return artist;
-    } else {
+    } catch (error) {
       return null;
     }
   }
 
-  addOne(createartistDto: CreateArtistDto) {
-    const artist = {
-      id: uuidV4(),
-      ...createartistDto,
-    };
-    this.artistDB.push(artist);
-    return artist;
+  async addOne(createartistDto: CreateArtistDto) {
+    try {
+      const newArtist = await this.prismaService.artist.create({
+        data: { ...createartistDto },
+      });
+      return newArtist;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  upPas(id: string, updateartistDto: UpdateArtistDto) {
-    const index = this.artistDB.findIndex((p) => p.id === id);
-    if (index >= 0) {
-      const upArtist = {
-        id,
-        name: updateartistDto.name
-          ? updateartistDto.name
-          : this.artistDB[index].name,
-        grammy:
-          typeof updateartistDto.grammy === 'boolean'
-            ? updateartistDto.grammy
-            : this.artistDB[index].grammy,
-      };
-      this.artistDB[index] = upArtist;
+  async upPas(id: string, updateartistDto: UpdateArtistDto) {
+    try {
+      const upArtist = await this.prismaService.artist.update({
+        where: { id },
+        data: { ...updateartistDto },
+      });
       return upArtist;
-    } else {
+    } catch (error) {
       return null;
     }
   }
 
-  deleteOne(_id: string) {
-    const resalt = this.artistDB.find((artist: Artist) => {
-      if (artist.id === _id) {
-        this.favsService.deleteOneArtist(_id);
-        this.tracksService.setArtistIdtoNull(_id);
-        this.albumsService.setArtistIdtoNull(_id);
-        return true;
-      }
+  async deleteOne(_id: string) {
+    const existingArtist = await this.prismaService.artist.findUnique({
+      where: { id: _id },
     });
-    if (resalt) {
-      const artists = this.artistDB.filter((p) => p.id !== _id);
-      this.artistDB = artists;
+
+    if (existingArtist) {
+      await this.prismaService.artist.delete({
+        where: { id: _id },
+      });
       return true;
     } else {
       return null;

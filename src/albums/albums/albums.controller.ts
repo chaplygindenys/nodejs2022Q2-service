@@ -21,13 +21,13 @@ export class AlbumsController {
   constructor(private readonly albumService: AlbumsService) {}
 
   @Get()
-  findAll() {
-    return this.albumService.findAll();
+  async findAll() {
+    return await this.albumService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param() params: FindOneIdParams) {
-    const album = this.albumService.findOne(params.id);
+  async findOne(@Param() params: FindOneIdParams) {
+    const album = await this.albumService.findOne(params.id);
     if (album === null) {
       throw new HttpException('album not found', HttpStatus.NOT_FOUND);
     }
@@ -36,17 +36,17 @@ export class AlbumsController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() createalbumDto: CreateAlbumDto) {
-    const album = this.albumService.addOne(createalbumDto);
+  async create(@Body() createalbumDto: CreateAlbumDto) {
+    const album = await this.albumService.addOne(createalbumDto);
     return album;
   }
 
   @Put(':id')
-  update(
+  async update(
     @Body() updatealbumDto: UpdateAlbumDto,
     @Param() params: FindOneIdParams,
   ) {
-    const album = this.albumService.upPas(params.id, updatealbumDto);
+    const album = await this.albumService.upPas(params.id, updatealbumDto);
     if (album === null) {
       throw new HttpException('album not found', HttpStatus.NOT_FOUND);
     }
@@ -55,8 +55,8 @@ export class AlbumsController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param() params: FindOneIdParams) {
-    const album = this.albumService.deleteOne(params.id);
+  async remove(@Param() params: FindOneIdParams) {
+    const album = await this.albumService.deleteOne(params.id);
     if (album === null) {
       throw new HttpException('album not found', HttpStatus.NOT_FOUND);
     }

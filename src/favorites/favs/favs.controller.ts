@@ -17,8 +17,8 @@ export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
   @Get()
-  findAll() {
-    const favss = this.favsService.findAll();
+  async findAll() {
+    const favss = await this.favsService.findAll();
     if (favss === null) {
       throw new HttpException('favs not found', HttpStatus.NOT_FOUND);
     }
@@ -27,8 +27,8 @@ export class FavsController {
 
   @Post('album/:id')
   @HttpCode(201)
-  createAlbum(@Param() params: FindOneIdParams) {
-    const favs = this.favsService.addOneAlbum(params.id);
+  async createAlbum(@Param() params: FindOneIdParams) {
+    const favs = await this.favsService.addOneAlbum(params.id);
     if (favs === null) {
       throw new HttpException(
         'UNPROCESSABLE ENTITY',
@@ -40,8 +40,8 @@ export class FavsController {
 
   @Post('artist/:id')
   @HttpCode(201)
-  createArtist(@Param() params: FindOneIdParams) {
-    const favs = this.favsService.addOneArtist(params.id);
+  async createArtist(@Param() params: FindOneIdParams) {
+    const favs = await this.favsService.addOneArtist(params.id);
     if (favs === null) {
       throw new HttpException(
         'UNPROCESSABLE ENTITY',
@@ -53,8 +53,8 @@ export class FavsController {
 
   @Post('track/:id')
   @HttpCode(201)
-  createTrack(@Param() params: FindOneIdParams) {
-    const favs = this.favsService.addOneTrack(params.id);
+  async createTrack(@Param() params: FindOneIdParams) {
+    const favs = await this.favsService.addOneTrack(params.id);
     if (favs === null) {
       throw new HttpException(
         'UNPROCESSABLE ENTITY',
@@ -66,8 +66,8 @@ export class FavsController {
 
   @Delete('album/:id')
   @HttpCode(204)
-  removeOneAlbum(@Param() params: FindOneIdParams) {
-    const favs = this.favsService.deleteOneAlbum(params.id);
+  async removeOneAlbum(@Param() params: FindOneIdParams) {
+    const favs = await this.favsService.deleteOneAlbum(params.id);
     if (favs === null) {
       throw new HttpException('favorite not found', HttpStatus.NOT_FOUND);
     }
@@ -75,8 +75,8 @@ export class FavsController {
 
   @Delete('artist/:id')
   @HttpCode(204)
-  removeOneArtist(@Param() params: FindOneIdParams) {
-    const favs = this.favsService.deleteOneArtist(params.id);
+  async removeOneArtist(@Param() params: FindOneIdParams) {
+    const favs = await this.favsService.deleteOneArtist(params.id);
     if (favs === null) {
       throw new HttpException('favorite not found', HttpStatus.NOT_FOUND);
     }
@@ -84,8 +84,8 @@ export class FavsController {
 
   @Delete('track/:id')
   @HttpCode(204)
-  removeOneTrack(@Param() params: FindOneIdParams) {
-    const favs = this.favsService.deleteOneTrack(params.id);
+  async removeOneTrack(@Param() params: FindOneIdParams) {
+    const favs = await this.favsService.deleteOneTrack(params.id);
     if (favs === null) {
       throw new HttpException('favorite not found', HttpStatus.NOT_FOUND);
     }
