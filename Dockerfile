@@ -11,14 +11,15 @@ COPY . .
 
 RUN npm run build
 
-
 FROM node:lts-alpine3.15
 
-COPY --from=builder /app/node_modules ./node_modules
+
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/doc ./doc
+
+RUN npm install --production
 
 ENV PORT 4000
 

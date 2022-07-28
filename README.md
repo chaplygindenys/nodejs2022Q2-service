@@ -77,6 +77,12 @@ For more information, visit: https://code.visualstudio.com/docs/editor/debugging
 
 Install docker : https://docs.docker.com/desktop/
 
+# Use
+
+You can use : `docker pull chaplygindenys/rest7` 177 mb
+
+or run:
+
 # Run
 
 `docker-compose up --build`

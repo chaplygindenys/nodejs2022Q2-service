@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Album } from 'prisma/prisma-client';
+import { Album } from '@prisma/client';
 
 import { PrismaService } from 'src/prisma/prisma/prisma.service';
 

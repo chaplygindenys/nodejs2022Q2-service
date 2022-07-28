@@ -7,7 +7,9 @@ export class FavsService {
 
   async findAll() {
     try {
-      const favsDB = await this.prismaService.favorites.findFirst({
+      const favsId = await this.findId();
+      const favsDB = await this.prismaService.favorites.findUnique({
+        where: { id: favsId },
         select: {
           albums: {
             select: { id: true, artistId: true, year: true, name: true },
