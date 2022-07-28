@@ -1,29 +1,30 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AlbumsService } from 'src/albums/albums/albums.service';
-import { ArtistsService } from 'src/artists/artists/artists.service';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma/prisma.service';
-import { TracksService } from 'src/tracks/tracks/tracks.service';
 
 @Injectable()
 export class FavsService {
-  constructor(
-    private prismaService: PrismaService,
-    @Inject(forwardRef(() => TracksService))
-    private readonly tracksService: TracksService,
-    @Inject(forwardRef(() => AlbumsService))
-    private readonly albumsService: AlbumsService,
-    @Inject(forwardRef(() => ArtistsService))
-    private readonly artistsService: ArtistsService,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
+
   async findAll() {
     try {
       const favsDB = await this.prismaService.favorites.findFirst({
         select: {
-          albums: true,
-          artists: true,
-          tracks: true,
+          albums: {
+            select: { id: true, artistId: true, year: true, name: true },
+          },
+          artists: { select: { id: true, name: true, grammy: true } },
+          tracks: {
+            select: {
+              id: true,
+              albumId: true,
+              artistId: true,
+              name: true,
+              duration: true,
+            },
+          },
         },
       });
+      console.log(favsDB);
       return favsDB;
     } catch (error) {
       console.log(error);

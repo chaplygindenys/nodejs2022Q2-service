@@ -1,18 +1,14 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Track } from '@prisma/client';
-import { FavsService } from 'src/favorites/favs/favs.service';
+import { Injectable } from '@nestjs/common';
+import { Track } from 'prisma/prisma-client';
+
 import { PrismaService } from 'src/prisma/prisma/prisma.service';
-import { v4 as uuidV4 } from 'uuid';
+
 import { CreateTrackDto } from '../dto/track-create.dto';
 import { UpdateTrackDto } from '../dto/track-update.dto';
 
 @Injectable()
 export class TracksService {
-  constructor(
-    private prismaService: PrismaService,
-    @Inject(forwardRef(() => FavsService))
-    private favsService: FavsService,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   async findAll() {
     return await this.prismaService.track.findMany();

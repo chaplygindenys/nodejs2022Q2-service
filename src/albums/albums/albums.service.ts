@@ -1,21 +1,14 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Album } from '@prisma/client';
-import { FavsService } from 'src/favorites/favs/favs.service';
+import { Injectable } from '@nestjs/common';
+import { Album } from 'prisma/prisma-client';
+
 import { PrismaService } from 'src/prisma/prisma/prisma.service';
-import { TracksService } from 'src/tracks/tracks/tracks.service';
-import { v4 as uuidV4 } from 'uuid';
+
 import { CreateAlbumDto } from '../dto/album-create.dto';
 import { UpdateAlbumDto } from '../dto/album-update.dto';
 
 @Injectable()
 export class AlbumsService {
-  constructor(
-    private prismaService: PrismaService,
-    @Inject(forwardRef(() => FavsService))
-    private readonly favsService: FavsService,
-    @Inject(forwardRef(() => TracksService))
-    private readonly traksService: TracksService,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   async findAll() {
     return await this.prismaService.album.findMany();
