@@ -6,6 +6,10 @@ interface User {
   createdAt: number; // timestamp of creation
   updatedAt: number; // timestamp of last update
 }
+interface Tokens {
+  accessToken: string;
+  refreshToken: string;
+}
 interface UserResponse {
   id: string; // uuid v4
   login: string;

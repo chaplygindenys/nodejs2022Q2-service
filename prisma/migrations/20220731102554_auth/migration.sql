@@ -2,7 +2,8 @@
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "login" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "hashPsw" TEXT NOT NULL,
+    "hashRefTok" TEXT,
     "version" INTEGER NOT NULL,
     "createdAt" INTEGER NOT NULL,
     "updatedAt" INTEGER NOT NULL,

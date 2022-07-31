@@ -30,24 +30,24 @@ services:
   #   networks:
   #     - postgres
 
-  rest7:
-    image: chaplygindenys/rest7
-    container_name: rest7
-    links:
-      - postgres:postgres
-    depends_on:
-      - postgres
-      # - pgadmin
-    env_file:
-      - docker.env
-    build: .
-    ports:
-      - '4000:4000'
-    volumes:
-      - ./src:/app/scr
-      - ./node_modules:/app/node_modules
-    networks:
-      - postgres
+  # rest7:
+  #   image: chaplygindenys/rest7
+  #   container_name: rest7
+  #   links:
+  #     - postgres:postgres
+  #   depends_on:
+  #     - postgres
+  #     # - pgadmin
+  #   env_file:
+  #     - docker.env
+  #   build: .
+  #   ports:
+  #     - '4000:4000'
+  #   volumes:
+  #     - ./src:/app/scr
+  #     - ./node_modules:/app/node_modules
+  #   networks:
+  #     - postgres
 
 networks:
   postgres:

@@ -11,12 +11,13 @@ datasource db {
 }
 
 model User {
-  id        String @id @default(uuid()) @db.Uuid
-  login     String
-  password  String
-  version   Int
-  createdAt Int
-  updatedAt Int
+  id         String  @id @default(uuid()) @db.Uuid
+  login      String  @unique
+  hashPsw    String
+  hashRefTok String?
+  version    Int
+  createdAt  Int
+  updatedAt  Int
 
   @@map("users")
 }

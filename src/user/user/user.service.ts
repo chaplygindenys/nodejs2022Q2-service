@@ -3,10 +3,14 @@ import { CreateUserDto } from '../dto/user-create.dto';
 import { UpdatePasswordDto } from '../dto/user-update.dto';
 import { PrismaService } from 'src/prisma/prisma/prisma.service';
 import { User } from '@prisma/client';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export default class UserService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private authService: AuthService,
+    private prismaService: PrismaService,
+  ) {}
 
   async findAll() {
     try {
@@ -46,9 +50,10 @@ export default class UserService {
   }
 
   async addOne(createUserDto: CreateUserDto) {
+    const hashPsw = await this.authService.hashData(createUserDto.password);
     const user = {
       login: createUserDto.login,
-      password: createUserDto.password,
+      hashPsw,
       version: 1,
       createdAt: +Date.now(),
       updatedAt: +Date.now(),
