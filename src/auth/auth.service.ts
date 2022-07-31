@@ -51,7 +51,7 @@ export class AuthService {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
       });
-      if (!user) throw 403;
+      if (!user || !user.hashRefTok) throw 403;
 
       const refTokMatches = await bcrypt.compare(refTok, user.hashRefTok);
       if (!refTokMatches) throw 403;
@@ -80,8 +80,9 @@ export class AuthService {
     });
   }
 
-  hashData(data: string) {
-    return bcrypt.hash(data, process.env.CRYPT_SALT);
+  async hashData(data: string) {
+    const salt: number = await +process.env.CRYPT_SALT;
+    return await bcrypt.hash(data, salt);
   }
   async updateRefHash(userId: string, refTok: string) {
     const hash = await this.hashData(refTok);

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../dto/user-create.dto';
 import { UpdatePasswordDto } from '../dto/user-update.dto';
 import { PrismaService } from 'src/prisma/prisma/prisma.service';
@@ -80,11 +81,19 @@ export default class UserService {
       where: { id },
     });
     if (existingUser) {
-      if (updatePasswordDto.oldPassword === existingUser.password) {
+      const passwordMatches = await bcrypt.compare(
+        updatePasswordDto.newPassword,
+        existingUser.hashPsw,
+      );
+
+      if (passwordMatches) {
+        const hashPsw = await this.authService.hashData(
+          updatePasswordDto.newPassword,
+        );
         const user = {
           id,
           login: existingUser.login,
-          password: updatePasswordDto.newPassword,
+          hashPsw: hashPsw,
           version: existingUser.version + 1,
           createdAt: +existingUser.createdAt,
           updatedAt: +Date.now(),
