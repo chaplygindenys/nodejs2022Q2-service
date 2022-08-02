@@ -1,29 +1,28 @@
 import 'dotenv/config';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma/prisma.service';
 import { AuthDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import UserService from 'src/user/user/user.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService, private prisma: PrismaService) {}
+  constructor(
+    @Inject(forwardRef(() => UserService))
+    private userServise: UserService,
 
-  async singup(dto: AuthDto): Promise<Tokens> {
-    const hashPsw = await this.hashData(dto.password);
-    const newUser = await this.prisma.user.create({
-      data: {
-        login: dto.login,
-        hashPsw,
-        version: 1,
-        createdAt: +Date.now(),
-        updatedAt: +Date.now(),
-      },
-    });
+    private jwtService: JwtService,
+    private prisma: PrismaService,
+  ) {}
 
-    const tokens = await this.getTokens(newUser.id, newUser.login);
-    await this.updateRefHash(newUser.id, tokens.refreshToken);
-    return tokens;
+  async singup(dto: AuthDto): Promise<boolean> {
+    const user = await this.userServise.addOne(dto);
+    if (!user) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   async login(dto: AuthDto): Promise<Tokens> {

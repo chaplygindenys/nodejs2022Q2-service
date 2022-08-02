@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { Message } from './auth-message';
 import { AuthService } from './auth.service';
 import { GetCurrentUser, GetCurrentUserId, Public } from './common/decorators';
 import { RefTokGuard } from './common/guards';
@@ -17,10 +18,11 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Public()
-  @Post('singup')
+  @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  async singup(@Body() dto: AuthDto): Promise<Tokens> {
-    return await this.authService.singup(dto);
+  async singup(@Body() dto: AuthDto): Promise<string> {
+    await this.authService.singup(dto);
+    return Message.AUTH_MESSAGE;
   }
 
   @Public()
