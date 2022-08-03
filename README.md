@@ -83,11 +83,12 @@ You can use : `docker pull chaplygindenys/rest7` 177 mb
 
 or run:
 
-# Run
-`docker compose version`
-version 1.... :`docker-compose up --build`
-version 2.... :`docker compose up`
+# first Run:
+1.version 2.... :`docker compose up`
+after installation:
+2.version 2.... :`docker compose down`
 
+3.version 2.... :`docker compose up`
 # test
 
 `npm run test`
