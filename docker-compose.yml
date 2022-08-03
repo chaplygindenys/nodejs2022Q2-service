@@ -31,7 +31,6 @@ services:
   #     - postgres
 
   rest7:
-    image: rest7
     container_name: rest7
     links:
       - postgres:postgres
