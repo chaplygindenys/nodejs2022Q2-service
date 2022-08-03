@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../dto/user-create.dto';
 import { UpdatePasswordDto } from '../dto/user-update.dto';
@@ -9,7 +9,6 @@ import { AuthService } from 'src/auth/auth.service';
 @Injectable()
 export default class UserService {
   constructor(
-    @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
     private prismaService: PrismaService,
   ) {}
@@ -52,6 +51,18 @@ export default class UserService {
   }
 
   async addOne(createUserDto: CreateUserDto) {
+    const existsUser = await this.prismaService.user.findUnique({
+      where: { login: createUserDto.login },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (existsUser) return existsUser;
+
     const hashPsw = await this.authService.hashData(createUserDto.password);
     const user = {
       login: createUserDto.login,
@@ -83,10 +94,9 @@ export default class UserService {
     });
     if (existingUser) {
       const passwordMatches = await bcrypt.compare(
-        updatePasswordDto.newPassword,
+        updatePasswordDto.oldPassword,
         existingUser.hashPsw,
       );
-
       if (passwordMatches) {
         const hashPsw = await this.authService.hashData(
           updatePasswordDto.newPassword,

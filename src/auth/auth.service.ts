@@ -1,28 +1,31 @@
 import 'dotenv/config';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma/prisma.service';
 import { AuthDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import UserService from 'src/user/user/user.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @Inject(forwardRef(() => UserService))
-    private userServise: UserService,
+  constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
-    private jwtService: JwtService,
-    private prisma: PrismaService,
-  ) {}
+  async singup(dto: AuthDto): Promise<Tokens> {
+    try {
+      const hashPsw = await this.hashData(dto.password);
+      const newUser = await this.prisma.user.create({
+        data: {
+          login: dto.login,
+          hashPsw,
+          version: 1,
+          createdAt: +Date.now(),
+          updatedAt: +Date.now(),
+        },
+      });
 
-  async singup(dto: AuthDto): Promise<boolean> {
-    const user = await this.userServise.addOne(dto);
-    if (!user) {
-      return false;
-    } else {
-      return true;
-    }
+      const tokens = await this.getTokens(newUser.id, newUser.login);
+      await this.updateRefHash(newUser.id, tokens.refreshToken);
+      return tokens;
+    } catch (error) {}
   }
 
   async login(dto: AuthDto): Promise<Tokens> {
@@ -40,7 +43,6 @@ export class AuthService {
       return tokens;
     } catch (error) {
       if (error.message === 403) return null;
-      console.log(error);
       return null;
     }
   }
@@ -60,7 +62,6 @@ export class AuthService {
       return tokens;
     } catch (error) {
       if (error.message === 403) return null;
-      console.log(error);
       return null;
     }
   }
