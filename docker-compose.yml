@@ -40,7 +40,7 @@ services:
       # - pgadmin
     env_file:
       - docker.env
-    build: .
+    # build: .
     ports:
       - '4000:4000'
     volumes:
