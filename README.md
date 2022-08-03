@@ -83,12 +83,10 @@ You can use : `docker pull chaplygindenys/rest7` 177 mb
 
 or run:
 
-- docker.env  --->поменяйте на   - ./.env  и для docker  compose  v2....  "features": {
-docker decstop--> sitings-->docker engen-->    "buildkit": false    чтобы база писалась в переменную, а не в физическую папку  ---также это решает проблему  прав доступа в файловую систему 
-
 # Run
-
-`docker-compose up --build`
+`docker compose version`
+version 1.... :`docker-compose up --build`
+version 2.... :`docker compose up`
 
 # test
 
