@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AlbumsModule } from './albums/album.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,8 +7,10 @@ import { FavsModule } from './favorites/favs.module';
 import { TracksModule } from './tracks/track.module';
 import { UserModule } from './user/user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AccTokGuard } from './auth/common/guards';
+import { LoggerMiddleware } from './logger/logger.middleware';
+import { HttpExceptionFilter } from './logger/http-exception.filter';
 
 @Module({
   imports: [
@@ -26,6 +28,14 @@ import { AccTokGuard } from './auth/common/guards';
       provide: APP_GUARD,
       useClass: AccTokGuard,
     },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

@@ -41,6 +41,7 @@ export class AuthController {
   async logout(@GetCurrentUserId() userId: string) {
     await this.authService.logout(userId);
   }
+
   @Public()
   @UseGuards(RefTokGuard)
   @Post('refresh')

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
-import PromiseOpenAPIObject from './config/configuration';
+import PromiseOpenAPIObject from './utils/configuration';
 import { ValidationPipe } from '@nestjs/common';
 import { AccTokGuard } from './auth/common/guards';
 

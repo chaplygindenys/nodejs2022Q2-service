@@ -11,7 +11,7 @@ type JwtPayload = {
 export class RefTokStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromBodyField('Bearer'),
       ignoreExpiration: true,
       secretOrKey: process.env.JWT_SECRET_REFRESH_KEY,
     });
