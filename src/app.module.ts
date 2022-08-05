@@ -10,7 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AccTokGuard } from './auth/common/guards';
 import { LoggerMiddleware } from './logger/logger.middleware';
-import { HttpExceptionFilter } from './logger/http-exception.filter';
+import { LoggerModule } from './logger/logger.module';
+import { AllExceptionsFilter } from './logger/exception.filter';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { HttpExceptionFilter } from './logger/http-exception.filter';
     TracksModule,
     UserModule,
     AuthModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [
@@ -30,7 +32,7 @@ import { HttpExceptionFilter } from './logger/http-exception.filter';
     },
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
+      useClass: AllExceptionsFilter,
     },
   ],
 })

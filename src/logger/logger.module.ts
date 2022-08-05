@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { LoggerMiddleware } from './logger.middleware';
+import { MyLogger } from './logger.service';
 
 @Module({
-  providers: [LoggerMiddleware],
-  exports: [LoggerMiddleware],
+  imports: [PrismaModule],
+  providers: [LoggerMiddleware, MyLogger],
+  exports: [LoggerMiddleware, MyLogger],
 })
 export class LoggerModule {}

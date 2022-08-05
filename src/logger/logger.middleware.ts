@@ -1,10 +1,13 @@
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import 'dotenv/config';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { inspect } from 'util';
+import { MyLogger } from './logger.service';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  private logger = new Logger('HTTP');
+  constructor(private logger: MyLogger) {}
+  // private logger = new MyLogger('HTTP');
 
   myInspect(obj: unknown): string {
     return inspect(obj, { showHidden: false, depth: null, colors: true });
@@ -18,13 +21,13 @@ export class LoggerMiddleware implements NestMiddleware {
       const { statusCode } = response;
       const contentLength = response.get('content-length');
 
-      this.logger.log(
-        `method: ${method} originalUrl: ${originalUrl} query: ${this.myInspect(
-          query,
-        )} body: ${this.myInspect(
-          body,
-        )} statusCode: ${statusCode} contentLength: ${contentLength} - userAgent: ${userAgent} ip: ${ip}`,
-      );
+      const logString = `method: ${method} originalUrl: ${originalUrl} query: ${this.myInspect(
+        query,
+      )} body: ${this.myInspect(
+        body,
+      )} statusCode: ${statusCode} contentLength: ${contentLength} - userAgent: ${userAgent} ip: ${ip}`;
+
+      this.logger.log(logString);
     });
 
     next();
