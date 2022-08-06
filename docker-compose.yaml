@@ -16,7 +16,7 @@ services:
     networks:
       - custom-network
     volumes:
-      - ./logger:/app/logger
+      - ./logges:/app/logges
       - ./src:/app/src
       - ./node_modules:/app/node_modules
 
