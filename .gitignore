@@ -1,3 +1,8 @@
+#postgres
+/pgdata
+/pg_data
+/postgres/pgdata
+
 # compiled output
 /dist
 /node_modules

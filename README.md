@@ -70,3 +70,25 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+## Start with Docker
+
+# Install
+
+Install docker : https://docs.docker.com/desktop/
+
+# Use
+
+You can use : `docker pull chaplygindenys/rest7` 177 mb
+
+or run:
+
+# first Run:
+1.version 2.... :`docker compose up`
+after installation:
+2.version 2.... :`docker compose down`
+
+3.version 2.... :`docker compose up`
+# test
+
+`npm run test`
