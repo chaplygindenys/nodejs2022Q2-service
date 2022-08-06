@@ -1,4 +1,12 @@
 -- CreateTable
+CREATE TABLE "loggers" (
+    "id" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "loggers_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "login" TEXT NOT NULL,
@@ -50,6 +58,9 @@ CREATE TABLE "favorites" (
 
     CONSTRAINT "favorites_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_login_key" ON "users"("login");
 
 -- AddForeignKey
 ALTER TABLE "artists" ADD CONSTRAINT "artists_favoritesId_fkey" FOREIGN KEY ("favoritesId") REFERENCES "favorites"("id") ON DELETE SET NULL ON UPDATE CASCADE;
