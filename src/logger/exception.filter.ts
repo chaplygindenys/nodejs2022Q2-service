@@ -28,11 +28,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const logString = `URL: ${request.url} Code: ${httpStatus} authErrorInfo: ${
-      request.authInfo ? request.authInfo : ''
-    }  `;
-    this.logger.error(logString);
-
     const responseBody = {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),
@@ -40,5 +35,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     };
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+
+    const logString = `URL: ${request.url} Code: ${httpStatus}   `;
+    this.logger.error(logString);
+    this.logger.warn(logString);
+    this.logger.debug(logString);
+    this.logger.verbose(logString);
   }
 }

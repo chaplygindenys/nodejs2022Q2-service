@@ -14,18 +14,16 @@ export class LoggerMiddleware implements NestMiddleware {
   }
 
   use(request: Request, response: Response, next: NextFunction): void {
-    const { body, query, ip, method, originalUrl } = request;
-    const userAgent = request.get('user-agent') || '';
+    const { body, query, method, originalUrl } = request;
+    // const userAgent = request.get('user-agent') || '';
 
     response.on('finish', () => {
       const { statusCode } = response;
-      const contentLength = response.get('content-length');
+      // const contentLength = response.get('content-length');
 
       const logString = `method: ${method} originalUrl: ${originalUrl} query: ${this.myInspect(
         query,
-      )} body: ${this.myInspect(
-        body,
-      )} statusCode: ${statusCode} contentLength: ${contentLength} - userAgent: ${userAgent} ip: ${ip}`;
+      )} body: ${this.myInspect(body)} statusCode: ${statusCode} `;
 
       this.logger.log(logString);
     });

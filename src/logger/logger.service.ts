@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { Injectable, Scope, ConsoleLogger } from '@nestjs/common';
-import { existsSync, fstat, statSync } from 'fs';
+import { existsSync, statSync } from 'fs';
 import { appendFile } from 'fs/promises';
 import { sep } from 'path';
 import { cwd } from 'process';
@@ -15,33 +15,92 @@ export class MyLogger extends ConsoleLogger {
 
   log(message: any, context?: string): void;
   log(message: any, ...optionalParams: any[]): void;
-  log(message: unknown, context?: unknown, ...rest: unknown[]): void {
+  log(message: unknown, context?: unknown): void {
     if (+process.env.LOGGER_LEVEL >= 1) {
-      console.log(message);
-      if (typeof message === 'string') {
-        this.writeLogToFile(`LOG: ${message}`);
+      if (!context) {
+        super.log(message);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`LOG: ${message}`);
+        }
+      } else {
+        super.log(message, context);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`LOG: ${message} ${context}`);
+        }
       }
     }
   }
 
   error(message: any, stack?: string, context?: string): void;
   error(message: any, ...optionalParams: any[]): void;
-  error(
-    message: unknown,
-    stack?: unknown,
-    context?: unknown,
-    ...rest: unknown[]
-  ): void {
+  error(message: unknown, context?: unknown): void {
     if (+process.env.LOGGER_LEVEL >= 2) {
-      console.error(message);
-      if (typeof message === 'string') {
-        this.writeLogToFile(`ERROR: ${message}`);
+      if (!context) {
+        super.error(message);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`ERROR: ${message}`);
+        }
+      } else {
+        super.error(message, context);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`ERROR: ${message} ${context}`);
+        }
       }
     }
   }
 
-  customLog() {
-    this.log('Please feed the cat!');
+  warn(message: any, context?: string): void;
+  warn(message: any, ...optionalParams: any[]): void;
+  warn(message: unknown, context?: unknown): void {
+    if (+process.env.LOGGER_LEVEL >= 3) {
+      if (!context) {
+        super.warn(message);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`WARN: ${message}`);
+        }
+      } else {
+        super.warn(message, context);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`WARN: ${message} ${context}`);
+        }
+      }
+    }
+  }
+
+  debug(message: any, context?: string): void;
+  debug(message: any, ...optionalParams: any[]): void;
+  debug(message: unknown, context?: unknown): void {
+    if (+process.env.LOGGER_LEVEL >= 4) {
+      if (!context) {
+        super.debug(message);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`DEBAG: ${message}`);
+        }
+      } else {
+        super.debug(message, context);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`DEBAG: ${message} ${context}`);
+        }
+      }
+    }
+  }
+
+  verbose(message: any, context?: string): void;
+  verbose(message: any, ...optionalParams: any[]): void;
+  verbose(message: unknown, context?: unknown): void {
+    if (+process.env.LOGGER_LEVEL >= 5) {
+      if (!context) {
+        super.verbose(message);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`VERBOSE: ${message}`);
+        }
+      } else {
+        super.verbose(message, context);
+        if (typeof message === 'string') {
+          this.writeLogToFile(`VERBOSE: ${message} ${context}`);
+        }
+      }
+    }
   }
 
   async writeLogToFile(newLog: string): Promise<void> {
@@ -49,7 +108,6 @@ export class MyLogger extends ConsoleLogger {
       const log = `${Date.now()} ${newLog}${EOL}`;
       const pathToLogFolder = `${cwd()}${sep}logges`;
       const loggerDb = await this.prisma.logger.findFirst();
-      console.log(loggerDb);
 
       if (!loggerDb) {
         const newFileName = `${Date.now()}.log`;
@@ -57,10 +115,9 @@ export class MyLogger extends ConsoleLogger {
 
         appendFile(filePath, log, 'utf8');
 
-        const loger = await this.prisma.logger.create({
+        await this.prisma.logger.create({
           data: { name: newFileName },
         });
-        console.log(loger);
       } else {
         const filePath = `${pathToLogFolder}${sep}${loggerDb.name}`;
         if (existsSync(filePath)) {
@@ -89,7 +146,7 @@ export class MyLogger extends ConsoleLogger {
         }
       }
     } catch (error) {
-      console.log(error);
+      this.error(error.message);
     }
   }
 }
